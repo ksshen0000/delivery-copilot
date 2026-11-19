@@ -1,0 +1,66 @@
+{
+  "name": "gpt54mini-hybrid",
+  "provider": "openai",
+  "model": "gpt-5.4-mini",
+  "retrieval": "hybrid",
+  "top_k": 6,
+  "chunk_size": 600,
+  "repeats": 3,
+  "cases": 135,
+  "errors": 0,
+  "accuracy": 0.726,
+  "accuracy_by_repeat": [
+    0.711,
+    0.733,
+    0.733
+  ],
+  "macro_f1": 0.73,
+  "per_label": {
+    "范围内": {
+      "precision": 0.833,
+      "recall": 0.897,
+      "support": 39,
+      "f1": 0.864
+    },
+    "范围外": {
+      "precision": 0.905,
+      "recall": 0.603,
+      "support": 63,
+      "f1": 0.724
+    },
+    "存在歧义": {
+      "precision": 0.5,
+      "recall": 0.758,
+      "support": 33,
+      "f1": 0.602
+    }
+  },
+  "confusion": {
+    "范围内": {
+      "范围内": 35,
+      "范围外": 0,
+      "存在歧义": 3,
+      "None": 1
+    },
+    "范围外": {
+      "范围内": 3,
+      "范围外": 38,
+      "存在歧义": 22,
+      "None": 0
+    },
+    "存在歧义": {
+      "范围内": 4,
+      "范围外": 4,
+      "存在歧义": 25,
+      "None": 0
+    }
+  },
+  "unparsed": 1,
+  "evidence_retrieved": 0.952,
+  "evidence_cited": 0.948,
+  "invalid_citation_rate": 0.0,
+  "avg_tool_calls": 3.452,
+  "avg_latency_s": 4.496,
+  "avg_tokens_in": 4938.696,
+  "avg_tokens_out": 386.911
+}

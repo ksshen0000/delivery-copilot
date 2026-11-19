@@ -1,0 +1,66 @@
+{
+  "name": "deepseek-bm25",
+  "provider": "deepseek",
+  "model": "deepseek-chat",
+  "retrieval": "bm25",
+  "top_k": 6,
+  "chunk_size": 600,
+  "repeats": 3,
+  "cases": 135,
+  "errors": 0,
+  "accuracy": 0.859,
+  "accuracy_by_repeat": [
+    0.844,
+    0.889,
+    0.844
+  ],
+  "macro_f1": 0.828,
+  "per_label": {
+    "范围内": {
+      "precision": 0.973,
+      "recall": 0.923,
+      "support": 39,
+      "f1": 0.947
+    },
+    "范围外": {
+      "precision": 0.808,
+      "recall": 1.0,
+      "support": 63,
+      "f1": 0.894
+    },
+    "存在歧义": {
+      "precision": 0.85,
+      "recall": 0.515,
+      "support": 33,
+      "f1": 0.642
+    }
+  },
+  "confusion": {
+    "范围内": {
+      "范围内": 36,
+      "范围外": 0,
+      "存在歧义": 3,
+      "None": 0
+    },
+    "范围外": {
+      "范围内": 0,
+      "范围外": 63,
+      "存在歧义": 0,
+      "None": 0
+    },
+    "存在歧义": {
+      "范围内": 1,
+      "范围外": 15,
+      "存在歧义": 17,
+      "None": 0
+    }
+  },
+  "unparsed": 0,
+  "evidence_retrieved": 1.0,
+  "evidence_cited": 1.0,
+  "invalid_citation_rate": 0.0,
+  "avg_tool_calls": 2.793,
+  "avg_latency_s": 5.115,
+  "avg_tokens_in": 4323.163,
+  "avg_tokens_out": 559.83
+}

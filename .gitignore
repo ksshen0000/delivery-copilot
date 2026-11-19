@@ -1,0 +1,11 @@
+__pycache__/
+.venv/
+node_modules/
+dist/
+.env
+backend/data/
+*.db
+.pytest_cache/
+
+# 演示视频及其封面、字幕，不进仓库
+docs/media/

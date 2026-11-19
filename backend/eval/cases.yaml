@@ -1,0 +1,422 @@
+# 变更范围判断评估集（基于 sample_data/project_a）
+#
+# 标签规则：
+#   范围内   文档明确包含；或是已明确条款的直接组成部分；或已经书面确认（会议纪要、点表等）的内容。
+#   范围外   文档明确排除；与已约定的规格、数量、品牌、标准冲突（属于变更）；或明确属于甲方责任。
+#   存在歧义 文档没有提及，且不能从现有条款明确推断；或条款可以有两种合理解读。
+#
+# evidence：判断依据应来自的文档（文件名片段）及其中的原文片段（必须逐字出现）。
+#   用于评估“检索到了没有”和“引用对了没有”。
+# reviewed：标签是否已由项目经理复核。草稿由 Claude 起草，复核前不作为最终结论。
+
+- id: S01
+  request: 甲方质量部希望机器人抓毛坯前先读二维码，码值和加工结果绑定后传给 MES，这个算我们的活吗？
+  label: 范围外
+  category: 追溯
+  evidence:
+    - {doc: 技术协议, contains: 本期不包含工件追溯功能}
+  rationale: 技术协议 3.8 明确排除打码、读码、条码绑定，只预留 PROFINET 槽位。
+  reviewed: false
+
+- id: S02
+  request: 客户问能不能在成品下线前加一台激光打码机，把日期和序列号打在工件上。
+  label: 范围外
+  category: 追溯
+  evidence:
+    - {doc: 技术协议, contains: 本期不包含工件追溯功能}
+  rationale: 3.8 明确排除打码。
+  reviewed: false
+
+- id: S03
+  request: 甲方 IT 想让我们顺便把车间的生产看板也做了，数据从 MES 里取。
+  label: 范围外
+  category: MES
+  evidence:
+    - {doc: 技术协议, contains: MES 侧的数据采集、看板开发不在乙方范围内}
+  rationale: 3.7 明确 MES 侧数据采集和看板开发不在乙方范围。
+  reviewed: false
+
+- id: S04
+  request: 甲方要求 PLC 通过 OPC UA 把当前报警代码传给 MES，我们需要做吗？
+  label: 范围内
+  category: MES
+  evidence:
+    - {doc: 技术协议, contains: 向甲方 MES 提供产量、节拍、设备状态、报警数据}
+    - {doc: 通讯点表, contains: 当前报警代码}
+  rationale: 3.7 约定提供报警数据，点表已有报警代码点位。
+  reviewed: false
+
+- id: S05
+  request: MES 那边要每件工件的加工完成时间戳，这个点位要我们出吗？
+  label: 范围内
+  category: MES
+  evidence:
+    - {doc: 方案评审会, contains: 增加“单件加工完成时间戳”点位}
+    - {doc: 通讯点表, contains: 单件加工完成时间戳}
+  rationale: 技术协议未单列，但方案评审会已书面确认新增，点表 V0.4 已包含。
+  reviewed: false
+
+- id: S06
+  request: 客户希望 MES 能下发一个“允许生产”信号，MES 不允许时设备做完当前件就停，PLC 这边要支持吗？
+  label: 范围内
+  category: MES
+  evidence:
+    - {doc: 通讯点表, contains: MES 允许生产}
+  rationale: 点表已定义 MES→PLC 的允许生产信号。
+  reviewed: false
+
+- id: S07
+  request: 甲方刘洋要在 HMI 上加一个按班次统计的产量报表页面。
+  label: 存在歧义
+  category: HMI
+  evidence:
+    - {doc: 技术协议, contains: HMI 触摸屏 1 台}
+    - {doc: 技术协议, contains: MES 侧的数据采集、看板开发不在乙方范围内}
+  rationale: 技术协议只约定 HMI 硬件和产线逻辑，没有画面清单；班次产量数据已有点位，但报表类功能接近 MES 职责。
+  reviewed: false
+
+- id: S08
+  request: 客户想在 HMI 上查最近 30 天的历史报警记录，能导出 Excel。
+  label: 存在歧义
+  category: HMI
+  evidence:
+    - {doc: 技术协议, contains: HMI 触摸屏 1 台}
+  rationale: 未约定 HMI 画面和数据存储要求，历史记录和导出可能需要额外存储或上位机。
+  reviewed: false
+
+- id: S09
+  request: 客户要求 HMI 画面支持中英文切换，方便外方审核时使用。
+  label: 存在歧义
+  category: HMI
+  evidence:
+    - {doc: 技术协议, contains: HMI 触摸屏 1 台}
+  rationale: 文档未提及 HMI 语言要求（资料约定为中文，但没有约定画面语言）。
+  reviewed: false
+
+- id: S10
+  request: 甲方提出料仓从 6 层改成 8 层，自主运行时间能更长一点。
+  label: 范围外
+  category: 机械
+  evidence:
+    - {doc: 技术协议, contains: 均为 6 层抽屉式}
+    - {doc: 方案评审会, contains: 会影响料仓结构和交期，需要书面变更}
+  rationale: 规格约定为 6 层，评审会已明确增层需书面变更。
+  reviewed: false
+
+- id: S11
+  request: 料仓每层抽屉要有到位检测，没推到位不能启动，这个我们要做吗？
+  label: 范围内
+  category: 机械
+  evidence:
+    - {doc: 技术协议, contains: 带到位检测}
+  rationale: 3.3 明确包含到位检测。
+  reviewed: false
+
+- id: S12
+  request: 车间明年可能加第五台机床，客户问地轨能不能覆盖到那个位置。
+  label: 范围内
+  category: 扩展
+  evidence:
+    - {doc: 方案评审会, contains: 地轨行程 8 m 可覆盖第五台机床位置}
+  rationale: 现有 8 m 地轨已覆盖，不需要额外工作；评审会已答复。
+  reviewed: false
+
+- id: S13
+  request: 第五台机床到了以后，客户希望我们把它接进产线程序，和现有 4 台一起调度。
+  label: 范围外
+  category: 扩展
+  evidence:
+    - {doc: 方案评审会, contains: 程序扩展需另行评估}
+    - {doc: 技术协议, contains: 与 4 台机床的信号交互}
+  rationale: 供货范围按 4 台机床，评审会明确程序扩展另行评估。
+  reviewed: false
+
+- id: S14
+  request: 客户新开发了一个型号 ZX-A03，想让这条线也能做，需要我们配夹爪和程序。
+  label: 范围外
+  category: 产品
+  evidence:
+    - {doc: 技术协议, contains: 共 2 个型号：ZX-A01、ZX-A02}
+  rationale: 加工对象约定为 2 个型号，新型号属于变更。
+  reviewed: false
+
+- id: S15
+  request: ZX-A02 换型现在要 26 分钟，客户要求必须压到 20 分钟以内，这是我们该解决的吗？
+  label: 范围内
+  category: 性能
+  evidence:
+    - {doc: 技术协议, contains: 换型时间不大于 20 分钟}
+  rationale: 技术协议明确换型 ≤20 分钟，是乙方应达成的指标。
+  reviewed: false
+
+- id: S16
+  request: 客户说 ZX-A02 的节拍也必须做到 45 秒以内，否则不签 SAT。
+  label: 存在歧义
+  category: 性能
+  evidence:
+    - {doc: 技术协议, contains: ZX-A01，按 4 台机床满负荷计算}
+  rationale: 45 s 指标的备注只针对 ZX-A01，ZX-A02 未约定节拍。
+  reviewed: false
+
+- id: S17
+  request: 客户要求 OEE 统计时把机床本体的故障停机也算进来，算下来要达到 90%。
+  label: 范围外
+  category: 性能
+  evidence:
+    - {doc: 技术协议, contains: 不含机床本体故障与甲方来料问题}
+  rationale: OEE 指标明确不含机床本体故障，客户要求超出约定口径。
+  reviewed: false
+
+- id: S18
+  request: 满料以后客户希望设备能无人看管自己跑一个小时，这个指标我们有承诺吗？
+  label: 范围内
+  category: 性能
+  evidence:
+    - {doc: 技术协议, contains: 料仓自主运行时间}
+  rationale: 性能指标约定满料状态下 ≥60 分钟。
+  reviewed: false
+
+- id: S19
+  request: 客户要求机器人在两台机床之间做工序转运，比如 OP10 做完转到 OP20 的机床上，这在我们范围里吗？
+  label: 范围内
+  category: 工艺
+  evidence:
+    - {doc: 技术协议, contains: 机床之间工序转运}
+  rationale: 项目概述明确包含机床之间的工序转运。
+  reviewed: false
+
+- id: S20
+  request: 甲方想把视觉换成 3D 视觉，这样毛坯随便堆放也能抓。
+  label: 范围外
+  category: 视觉
+  evidence:
+    - {doc: 技术协议, contains: 2D 视觉系统 1 套}
+  rationale: 约定为 2D 视觉和抽屉式料仓定位，改 3D 属于规格变更。
+  reviewed: false
+
+- id: S21
+  request: 毛坯表面有时候有油污和反光，客户要求视觉在这种情况下也要稳定识别。
+  label: 存在歧义
+  category: 视觉
+  evidence:
+    - {doc: 技术协议, contains: 定位精度 ±0.5 mm}
+  rationale: 只约定了定位精度，没有约定来料表面状态；油污属于来料问题还是视觉鲁棒性，需要澄清。
+  reviewed: false
+
+- id: S22
+  request: 客户要求安全围栏、安全门锁和急停都要有，并且符合国标，这个是我们的吗？
+  label: 范围内
+  category: 安全
+  evidence:
+    - {doc: 技术协议, contains: 安全围栏、安全门锁、安全光栅及急停回路}
+  rationale: 3.5 明确包含。
+  reviewed: false
+
+- id: S23
+  request: 甲方的设备要出口到欧洲工厂复制，要求这条线做 CE 认证。
+  label: 范围外
+  category: 安全
+  evidence:
+    - {doc: 技术协议, contains: 满足 GB 11291.2 要求}
+  rationale: 约定的安全标准为国标，CE 认证属于额外要求。
+  reviewed: false
+
+- id: S24
+  request: 人工往料仓补料的位置，客户要求再加一道安全光栅，防止补料时机器人动作伤人。
+  label: 存在歧义
+  category: 安全
+  evidence:
+    - {doc: 技术协议, contains: 安全围栏、安全门锁、安全光栅及急停回路}
+  rationale: 安全光栅在范围内，但没有约定数量和覆盖位置；补料区防护属于基本安全要求还是新增，需要按风险评估确认。
+  reviewed: false
+
+- id: S25
+  request: 客户要求把安全围栏颜色改成他们工厂统一的安全黄。
+  label: 存在歧义
+  category: 安全
+  evidence:
+    - {doc: 技术协议, contains: 安全围栏}
+  rationale: 文档未约定围栏颜色。
+  reviewed: false
+
+- id: S26
+  request: 客户想把主控 PLC 换成三菱的，因为他们维修人员更熟悉三菱。
+  label: 范围外
+  category: 电气
+  evidence:
+    - {doc: 技术协议, contains: 西门子 S7-1500}
+  rationale: 已约定西门子 S7-1500，换品牌属于变更。
+  reviewed: false
+
+- id: S27
+  request: 机床的自动门、卡盘夹紧信号还没改好，客户让我们的电气工程师去改机床那边的接线。
+  label: 范围外
+  category: 甲方责任
+  evidence:
+    - {doc: 技术协议, contains: 由甲方协调机床厂家完成机床侧改造}
+  rationale: 3.6 和 5.2 明确机床侧改造由甲方负责。
+  reviewed: false
+
+- id: S28
+  request: 早班压缩空气压力不够，客户让我们给夹爪加个增压阀或者储气罐解决。
+  label: 范围外
+  category: 甲方责任
+  evidence:
+    - {doc: 技术协议, contains: 压缩空气（0.5–0.7 MPa）}
+  rationale: 5.1 约定由甲方提供 0.5–0.7 MPa 气源，压力不足是甲方责任。
+  reviewed: false
+
+- id: S29
+  request: 设备基础那块地面不平，客户让我们顺便把地面找平一下。
+  label: 范围外
+  category: 甲方责任
+  evidence:
+    - {doc: 技术协议, contains: 平整度 ±3 mm/2 m}
+  rationale: 5.1 地面条件由甲方提供。
+  reviewed: false
+
+- id: S30
+  request: 客户说调试用的毛坯让我们自己去买，他们物料紧张。
+  label: 范围外
+  category: 甲方责任
+  evidence:
+    - {doc: 技术协议, contains: 提供每个型号毛坯样件各 50 件用于调试}
+  rationale: 5.3 调试样件和 FAT 用料由甲方提供。
+  reviewed: false
+
+- id: S31
+  request: 车间交换机到 MES 服务器的网线还没拉，客户问我们能不能顺便布一下。
+  label: 范围外
+  category: 甲方责任
+  evidence:
+    - {doc: 技术协议, contains: 提供至设备 PLC 的网线接口及 MES 服务器访问权限}
+  rationale: 5.4 车间网络由甲方提供。
+  reviewed: false
+
+- id: S32
+  request: 现场培训 3 天已经做完了，客户说新来了一批维护人员，要求再免费培训 2 天。
+  label: 范围外
+  category: 培训
+  evidence:
+    - {doc: 技术协议, contains: 现场培训 3 天}
+  rationale: 约定培训 3 天，额外培训属于变更。
+  reviewed: false
+
+- id: S33
+  request: 培训时客户想一次安排 15 个人一起上课。
+  label: 范围外
+  category: 培训
+  evidence:
+    - {doc: 技术协议, contains: 每期不超过 10 人}
+  rationale: 约定每期不超过 10 人。
+  reviewed: false
+
+- id: S34
+  request: 客户问我们能不能把培训过程录成视频给他们以后新员工看。
+  label: 存在歧义
+  category: 培训
+  evidence:
+    - {doc: 技术协议, contains: 现场培训 3 天}
+  rationale: 文档未提及培训视频。
+  reviewed: false
+
+- id: S35
+  request: 客户要电气图纸和 PLC 程序的备份，我们要给吗？
+  label: 范围内
+  category: 资料
+  evidence:
+    - {doc: 技术协议, contains: PLC 程序备份}
+  rationale: 7.2 明确提供电气图纸和 PLC 程序备份。
+  reviewed: false
+
+- id: S36
+  request: 客户要求我们提供机器人工艺包的源代码，方便他们以后自己改。
+  label: 范围外
+  category: 资料
+  evidence:
+    - {doc: 技术协议, contains: 不含加密的机器人工艺包源码}
+  rationale: 7.2 明确不含加密工艺包源码。
+  reviewed: false
+
+- id: S37
+  request: 客户要一份英文版的操作手册和维护手册。
+  label: 范围外
+  category: 资料
+  evidence:
+    - {doc: 技术协议, contains: 中文，纸质 2 套及电子版}
+  rationale: 约定资料为中文，英文版属于额外要求。
+  reviewed: false
+
+- id: S38
+  request: HMI 操作手册里没有换型的章节，客户要求补上，这个要我们出吗？
+  label: 范围内
+  category: 资料
+  evidence:
+    - {doc: 技术协议, contains: 提供操作手册}
+    - {doc: 问题清单, contains: HMI 操作手册缺少换型章节}
+  rationale: 操作手册是约定交付物，内容不完整属于乙方需关闭的问题（P-009）。
+  reviewed: false
+
+- id: S39
+  request: 客户要求我们随设备免费送一套备件包，包括夹爪指尖和视觉光源。
+  label: 存在歧义
+  category: 备件
+  evidence:
+    - {doc: 技术协议, contains: 备件清单}
+    - {doc: 合同, contains: 易损件（夹爪指尖、吸盘、视觉光源）不在免费更换范围内}
+  rationale: 只约定提供备件清单，未约定随机备件；合同把这些列为易损件，倾向不免费，但随机备件未明确。
+  reviewed: false
+
+- id: S40
+  request: 质保期内夹爪指尖磨损了，客户要求我们免费换新的。
+  label: 范围外
+  category: 质保
+  evidence:
+    - {doc: 合同, contains: 易损件（夹爪指尖、吸盘、视觉光源）不在免费更换范围内}
+  rationale: 合同第六条把夹爪指尖列为易损件，不免费更换。
+  reviewed: false
+
+- id: S41
+  request: 质保期内机器人的一个伺服电机坏了，客户要求我们免费更换，并且两天内到现场。
+  label: 范围内
+  category: 质保
+  evidence:
+    - {doc: 合同, contains: 48 小时内到达现场}
+  rationale: 设备本身质量问题在质保期内免费维修，48 小时到场是合同承诺。
+  reviewed: false
+
+- id: S42
+  request: 客户要求质保期从 12 个月延长到 24 个月。
+  label: 范围外
+  category: 质保
+  evidence:
+    - {doc: 合同, contains: 质保期为终验收通过之日起 12 个月}
+  rationale: 合同约定 12 个月。
+  reviewed: false
+
+- id: S43
+  request: 客户希望我们开通远程诊断，设备出问题时我们的工程师能远程连进 PLC 看。
+  label: 存在歧义
+  category: 服务
+  evidence:
+    - {doc: 合同, contains: 4 小时内响应}
+  rationale: 文档未提及远程运维，也涉及甲方网络安全策略。
+  reviewed: false
+
+- id: S44
+  request: SAT 那 72 小时，客户要求我们安排人三班倒在现场盯着。
+  label: 存在歧义
+  category: 服务
+  evidence:
+    - {doc: 技术协议, contains: 连续生产 72 小时}
+  rationale: 约定了 72 小时连续生产验收，但没有约定乙方驻场人员和班次安排。
+  reviewed: false
+
+- id: S45
+  request: 布局图里地轨要往东挪 400 毫米避开立柱，这个改动是不是要走变更单？
+  label: 范围内
+  category: 布局
+  evidence:
+    - {doc: 方案评审会, contains: 地轨位置向东平移 400 mm}
+  rationale: 方案评审会已确认，属于方案设计阶段的正常调整，已纳入布局图 V3。
+  reviewed: false
