@@ -1,0 +1,70 @@
+{
+  "name": "after-sales-zh-v1",
+  "domain": "after_sales",
+  "lang": "zh",
+  "docs_lang": "zh",
+  "provider": "deepseek",
+  "model": "deepseek-chat",
+  "retrieval": "hybrid",
+  "top_k": 6,
+  "chunk_size": 600,
+  "repeats": 3,
+  "cases": 72,
+  "errors": 0,
+  "accuracy": 0.792,
+  "accuracy_by_repeat": [
+    0.833,
+    0.792,
+    0.75
+  ],
+  "macro_f1": 0.692,
+  "per_label": {
+    "免费保修": {
+      "precision": 1.0,
+      "recall": 0.278,
+      "support": 18,
+      "f1": 0.435
+    },
+    "收费服务": {
+      "precision": 0.974,
+      "recall": 0.974,
+      "support": 39,
+      "f1": 0.974
+    },
+    "需诊断确认": {
+      "precision": 0.519,
+      "recall": 0.933,
+      "support": 15,
+      "f1": 0.667
+    }
+  },
+  "confusion": {
+    "免费保修": {
+      "免费保修": 5,
+      "收费服务": 0,
+      "需诊断确认": 13,
+      "None": 0
+    },
+    "收费服务": {
+      "免费保修": 0,
+      "收费服务": 38,
+      "需诊断确认": 0,
+      "None": 1
+    },
+    "需诊断确认": {
+      "免费保修": 0,
+      "收费服务": 1,
+      "需诊断确认": 14,
+      "None": 0
+    }
+  },
+  "unparsed": 1,
+  "evidence_retrieved": 0.965,
+  "evidence_cited": 0.938,
+  "invalid_citation_rate": 0.0,
+  "answer_language_match": 1,
+  "avg_tool_calls": 5.431,
+  "avg_latency_s": 8.837,
+  "avg_tokens_in": 9396.375,
+  "avg_tokens_out": 932.194
+}

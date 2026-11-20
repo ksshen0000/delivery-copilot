@@ -5,13 +5,13 @@
 #   role                系统提示词开头的身份，“你是……”
 #   judgment            什么时候需要给结论，“……时，回答开头单独写一行结论”
 #   basis               结论要引用哪些文件作依据
-#   labels              结论标签 → 判定标准，2~5 个；回答第一行写“结论：<标签>”，界面和评估都按它解析
+#   labels              结论：代码 → {name 显示名, definition 判定标准}，2~5 个。回答第一行写 [[verdict:代码]]，
+#                       界面按界面语言显示成标签，评估按代码打分；代码与语言无关，中英文版本必须相同
 #   rules               本领域额外的判断规则（可选），追加在系统提示词末尾
 #   examples            界面空白页上的示例问题
 #   eval.cases          评估集（相对 backend/），可选
 #   eval.documents      评估用的项目文档目录（相对 backend/），可选
-#
-# 本文件生成的系统提示词与引入领域包之前完全一致，评估结果可以直接对比。
+#   en                  英文版本：字段同上，没写的字段沿用中文；eval 不沿用，英文评估集单独指定
 
 name: 自动化交付
 description: 非标设备、自动化产线、系统集成项目的合同范围判断、进度追溯和验收风险。
@@ -19,9 +19,15 @@ role: 自动化项目交付实施助手，服务于项目经理和实施工程�
 judgment: 判断客户需求是否属于合同范围
 basis: 合同、技术协议或已书面确认的会议纪要
 labels:
-  范围内: 文档明确包含，是已约定条款的直接组成部分，或已书面确认。
-  范围外: 文档明确排除，与已约定的规格/数量/品牌/标准冲突，或明确属于甲方责任。
-  存在歧义: 文档未提及且无法从条款明确推断，或条款可有两种合理解读；说明歧义点和建议的澄清方式。
+  in_scope:
+    name: 范围内
+    definition: 文档明确包含，是已约定条款的直接组成部分，或已书面确认。
+  out_of_scope:
+    name: 范围外
+    definition: 文档明确排除，与已约定的规格/数量/品牌/标准冲突，或明确属于甲方责任。
+  ambiguous:
+    name: 存在歧义
+    definition: 文档未提及且无法从条款明确推断，或条款可有两种合理解读；说明歧义点和建议的澄清方式。
 rules: []
 examples:
   - 甲方要求在 HMI 上增加按班次的产量报表，在合同范围内吗？
@@ -30,3 +36,27 @@ examples:
 eval:
   cases: eval/cases.yaml
   documents: ../sample_data/project_a
+
+en:
+  name: Automation Delivery
+  description: Scope checks, progress tracing and acceptance risks for custom machinery, automation lines and system integration projects.
+  role: an assistant for delivering industrial automation projects, serving project managers and field engineers
+  judgment: judging whether a customer request falls within the contract scope
+  basis: the contract, the technical agreement or meeting minutes confirmed in writing
+  labels:
+    in_scope:
+      name: In scope
+      definition: Explicitly included in the documents, a direct part of an agreed clause, or confirmed in writing.
+    out_of_scope:
+      name: Out of scope
+      definition: Explicitly excluded, conflicts with the agreed specification/quantity/brand/standard, or is explicitly the customer's responsibility.
+    ambiguous:
+      name: Ambiguous
+      definition: Not mentioned and cannot be clearly inferred from the clauses, or a clause allows two reasonable readings; explain the ambiguity and how to clarify it.
+  examples:
+    - The customer wants a per-shift output report added to the HMI. Is that within the contract scope?
+    - Which issues are still open? Will any of them block the SAT?
+    - What are the criteria for final acceptance?
+  eval:
+    cases: eval/cases_en.yaml
+    documents: ../sample_data/project_a_en

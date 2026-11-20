@@ -1,0 +1,66 @@
+# 领域包：自动化设备售后服务（质保期内外的售后请求）
+# 字段说明见 automation_delivery.yaml。
+
+name: 售后服务
+description: 判断售后请求是免费保修还是收费服务，并给出响应级别、到场时限和处理团队。
+role: 自动化设备售后服务助手，服务于售后工程师和客服
+judgment: 判断客户的售后请求是否属于免费保修
+basis: 合同质保条款、售后服务协议、终验收证书、备件价格清单或操作维护规范
+labels:
+  free_warranty:
+    name: 免费保修
+    definition: 在质保期内，故障部件属于乙方提供的设备或软件，且没有迹象表明属于除外情形。故障原因尚未查明本身不影响判定：先按免费保修处理，查明是甲方原因再转为收费。
+  chargeable:
+    name: 收费服务
+    definition: 超出质保期；属于易损件；由甲方原因造成（违反操作维护规范、超负载、未经授权修改程序/参数/接线、气源电源网络不达标）；或属于新增功能、搬迁、额外巡检等质保之外的服务。
+  needs_diagnosis:
+    name: 需诊断确认
+    definition: 质保状态明确，但已有具体迹象表明可能属于除外情形（如发生碰撞、甲方改过参数或环境、气源电源不达标、未按规范维护），或连故障部件都还不能确定。要先查明原因和责任归属，才能确定由乙方免费发备品还是由甲方购买；说明需要现场或远程确认哪些信息。
+rules:
+  - 质保期从终验收证书签署之日起算，先确认故障发生时是否在质保期内。
+  - 质保期内乙方部件出现故障，默认按免费保修先修复；只有在已有具体迹象指向除外情形时才判为需诊断确认，不能仅因“原因未查明”就判为需诊断确认。
+  - 没有碰撞、误操作、擅自改动或气源电源不达标等迹象时，部件自身的故障（如伺服电机烧毁、传感器失效、触摸屏失灵、电源模块损坏）按免费保修处理，部件质量问题本身就是常见原因。
+  - 碰撞类报警或碰撞损坏（如 SRVO-050 碰撞检测、撞机）原因尚未查明时，碰撞本身就是可能由甲方原因造成的迹象：判为需诊断确认，不能先按免费保修处理。如果提问或文档已经说明了原因（如甲方修改了参数、操作工违规进入围栏），按该原因判定。
+  - 判为需诊断确认时，说明查明后的两种处理：属于乙方原因且在质保期内的，由乙方免费发备品；属于甲方原因或超出质保期的，由甲方按《备件价格清单》购买。
+  - 回答中给出建议的响应级别（P1/P2/P3）及对应的响应和到场时限，并指出应由哪个团队处理；依据售后服务协议。
+  - 售后服务协议与合同对同一事项规定不同时，以签署日期较新的售后服务协议为准，并指出差异。
+  - 历史工单中同类问题的处理结论可以作为参考，但判断要以条款为依据。
+  - 判为收费服务时，说明依据的除外条款，并给出可参考的收费标准或备件价格。
+examples:
+  - R1 的 J2 轴伺服电机烧了，整线停产，客户要求免费更换，我们多久要到场？
+  - 夹爪指尖磨损了，质保期内能免费换吗？
+  - 视觉最近偶发识别失败，客户说车间刚换了照明灯，这个算保修吗？
+eval:
+  cases: eval/cases_after_sales.yaml
+  documents: ../sample_data/after_sales_a
+
+en:
+  name: After-sales Service
+  description: Decide whether an after-sales request is free warranty work or a paid service, with the response level, on-site deadline and the team to handle it.
+  role: an after-sales service assistant for industrial automation equipment, serving service engineers and customer support
+  judgment: judging whether a customer's after-sales request is covered by the free warranty
+  basis: the contract's warranty clauses, the after-sales service agreement, the final acceptance certificate, the spare parts price list or the operation and maintenance rules
+  labels:
+    free_warranty:
+      name: Free warranty
+      definition: Within the warranty period, the failed part belongs to the equipment or software supplied by the Supplier, and nothing suggests an exclusion applies. An unknown root cause does not change this; repair it under warranty first, and reclassify as chargeable if a customer cause is found.
+    chargeable:
+      name: Chargeable
+      definition: Outside the warranty period; a wear part; caused by the customer (breaking the operation and maintenance rules, overloading, unauthorized changes to programs/parameters/wiring, air/power/network below specification); or a service outside the warranty such as new functions, relocation or extra inspections.
+    needs_diagnosis:
+      name: Needs diagnosis
+      definition: The warranty status is clear, but there are concrete signs an exclusion may apply (a collision, customer changes to parameters or environment, air or power below specification, maintenance not done as required), or even the failed part cannot be identified yet. The cause and responsibility must be established before deciding whether the Supplier ships spare parts free of charge or the customer buys them; say what must be confirmed on site or remotely.
+  rules:
+    - The warranty period starts on the date the final acceptance certificate is signed; first check whether the failure happened within it.
+    - A failed Supplier part within the warranty period is repaired under the free warranty by default; judge "needs diagnosis" only when concrete signs point to an exclusion, never just because the root cause is not yet known.
+    - With no sign of a collision, misuse, unauthorized changes or substandard air or power, a part failing on its own (e.g. a burned-out servo motor, a dead sensor, an unresponsive touch panel, a failed power module) is free warranty work; component quality problems are a common cause in themselves.
+    - When the cause of a collision alarm or collision damage (e.g. SRVO-050 collision detection, a crash) is not yet known, the collision itself is a sign the customer may be responsible: judge "needs diagnosis", never free warranty first. If the question or the documents already state the cause (e.g. the customer changed a parameter, an operator entered the fence), judge by that cause.
+    - When judging "needs diagnosis", state both outcomes: if the Supplier is responsible and the warranty applies, the Supplier ships spare parts free of charge; if the customer is responsible or the warranty has expired, the customer buys them at the spare parts price list.
+    - Give the recommended response level (P1/P2/P3) with its response and on-site deadlines, and the team that should handle it, from the after-sales service agreement.
+    - Where the service agreement and the contract differ on the same point, the more recently signed service agreement prevails; point out the difference.
+    - Past tickets for similar problems are a useful reference, but the judgment must rest on the clauses.
+    - For a chargeable service, cite the exclusion clause and give the applicable rates or spare part prices.
+  examples:
+    - The J2 servo motor on robot R1 burned out and the whole line is down. The customer wants a free replacement. How soon must we be on site?
+    - The gripper fingertips are worn. Can they be replaced for free under warranty?
+    - Vision has been failing intermittently and the customer just changed the workshop lighting. Is this covered?

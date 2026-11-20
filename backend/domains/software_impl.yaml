@@ -7,9 +7,15 @@ role: ToB 软件实施项目助手，服务于实施顾问和项目经理
 judgment: 判断客户提出的需求是否属于合同约定的实施范围
 basis: 合同、工作说明书（SOW）、需求规格说明书或已签字确认的需求变更单
 labels:
-  范围内: SOW 或需求规格说明书明确包含，或通过系统标准功能、配置即可实现，或已签字确认。
-  需求变更: SOW 明确排除，需要二次开发、新增接口或报表，或超出约定的用户数、组织、模块范围。
-  待澄清: 文档未约定清楚，或需求描述不足以判断实现方式；说明需要客户补充的信息。
+  in_scope:
+    name: 范围内
+    definition: SOW 或需求规格说明书明确包含，或通过系统标准功能、配置即可实现，或已签字确认。
+  change_request:
+    name: 需求变更
+    definition: SOW 明确排除，需要二次开发、新增接口或报表，或超出约定的用户数、组织、模块范围。
+  needs_clarification:
+    name: 待澄清
+    definition: 文档未约定清楚，或需求描述不足以判断实现方式；说明需要客户补充的信息。
 rules:
   - 标准功能和参数配置可实现的调整按范围内处理；需要改代码的按需求变更处理。
   - 用户验收测试（UAT）签字后提出的新需求，一律按需求变更处理。
@@ -19,3 +25,29 @@ examples:
   - 客户要求采购订单审批增加一级财务总监审批，算不算范围内？
   - 客户在 UAT 之后要求新增一张库存周转率报表，怎么处理？
   - 第二期上线还剩哪些未关闭的问题？
+
+en:
+  name: Software Implementation
+  description: Requirement scope, change management and go-live acceptance for B2B software implementation projects.
+  role: an assistant for B2B software implementation projects, serving implementation consultants and project managers
+  judgment: judging whether a customer request falls within the contracted implementation scope
+  basis: the contract, the statement of work (SOW), the requirements specification or signed change requests
+  labels:
+    in_scope:
+      name: In scope
+      definition: Included in the SOW or requirements specification, achievable with standard features or configuration, or confirmed in writing.
+    change_request:
+      name: Change request
+      definition: Excluded by the SOW, needs custom development, new interfaces or reports, or exceeds the agreed users, organizations or modules.
+    needs_clarification:
+      name: Needs clarification
+      definition: Not clearly agreed in the documents, or the request is too vague to tell how it would be implemented; list what the customer needs to provide.
+  rules:
+    - Adjustments achievable with standard features and parameters are in scope; anything that needs code changes is a change request.
+    - New requirements raised after user acceptance testing (UAT) sign-off are always change requests.
+    - Live features that deviate from the requirements specification are defects, fixed in scope, not change requests.
+    - Requests agreed verbally or in chat are not confirmed without a signed change request; remind the user to get one signed.
+  examples:
+    - The customer wants a CFO approval step added to purchase orders. Is that in scope?
+    - After UAT the customer asked for a new inventory turnover report. How should we handle it?
+    - Which issues are still open for the phase 2 go-live?

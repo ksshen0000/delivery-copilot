@@ -1,0 +1,244 @@
+# 售后判定评估集（基于 sample_data/after_sales_a，领域 after_sales）
+#
+# 标签规则（与 domains/after_sales.yaml 一致）：
+#   免费保修    质保期内，故障部件属于乙方设备或软件，且没有迹象表明属于除外情形；原因未查明不影响判定（先修后查）。
+#   收费服务    超出质保期；易损件；甲方原因（违反规范、超负载、未经授权修改、气源电源网络不达标）；或新增服务。
+#   需诊断确认  质保状态明确，但已有具体迹象指向除外情形（原因未查明的碰撞属于此类），或连故障部件都还不能确定；
+#               查明后：乙方原因且在保，乙方免费发备品；甲方原因或超保，甲方按备件价格清单购买。
+#
+# 背景：终验收证书 2026-10-20 签署，质保期 2026-10-20 至 2027-10-19；提问时间在质保期内（除非用例另有说明）。
+# evidence：判断依据应来自的文档（文件名片段）及其中逐字出现的原文。
+# reviewed：标签是否已由售后负责人复核。草稿由 Claude 起草；A01、A06 已由业务负责人复核。
+#
+# 修订记录：
+#   v1→v2：初版“需诊断确认”包含“故障原因还不能确定”，与“免费保修”重叠（v1 评估 0.792，错误集中在免费保修被判为
+#          需诊断确认）。改为行业通行的“先修后查”口径。
+#   v2→v4：业务负责人复核 A06——碰撞报警原因未查明时，责任归属和是否在保都定不了，无法确定是甲方购买还是乙方发备品，
+#          必须先诊断。规则改为“原因未查明的碰撞判需诊断确认”（v3 曾误写成“碰撞一律需诊断”，原因已明确的 A05、A18
+#          因此出错，v4 收窄）；并要求需诊断时说明查明后的两种处理。
+#   v4→v5：业务负责人复核 A01——没有碰撞和误操作迹象时，部件自身故障基本就是免费保修。规则补充具体例子
+#          （电机烧毁、传感器失效、触摸屏失灵、电源模块损坏）。
+
+- id: A01
+  request: R1 的 J2 轴伺服电机烧了，整线停产，客户要求免费更换，我们多久要到场？
+  label: 免费保修
+  category: 机器人
+  evidence:
+    - {doc: 售后服务协议, contains: 乙方免费维修或更换零部件}
+    - {doc: 售后服务协议, contains: 24 小时内到场}
+  rationale: 业务负责人复核：没有碰撞和误操作迹象，部件自身故障基本就是免费保修。伺服电机是乙方供货的备件；停线属于 P1，24 小时内到场。
+  reviewed: true
+
+- id: A02
+  request: 夹爪指尖磨损了，抓取偶尔打滑，客户要求质保期内免费换。
+  label: 收费服务
+  category: 易损件
+  evidence:
+    - {doc: 售后服务协议, contains: 夹爪指尖、吸盘、视觉光源、安全光栅保护罩}
+  rationale: 夹爪指尖是易损件，第五条（1）除外；工单 AS-002 同样按收费处理。
+  reviewed: false
+
+- id: A03
+  request: 视觉光源不亮了，客户问能不能免费换一个。
+  label: 收费服务
+  category: 易损件
+  evidence:
+    - {doc: 售后服务协议, contains: 夹爪指尖、吸盘、视觉光源、安全光栅保护罩}
+  rationale: 视觉光源列为易损件。
+  reviewed: false
+
+- id: A04
+  request: 料仓 3 号抽屉的到位传感器坏了，推到位还是报未到位，这个算保修吗？
+  label: 免费保修
+  category: 机械
+  evidence:
+    - {doc: 备件价格清单, contains: 料仓到位传感器}
+    - {doc: 售后工单记录, contains: 传感器批次缺陷}
+  rationale: 到位传感器是备件不是易损件，同类工单 AS-001 判为批次缺陷免费更换。
+  reviewed: false
+
+- id: A05
+  request: R2 给 VMC-04 上料时撞上了还没开到位的机床门，客户说上周他们电工调过机床的门信号延时，要求我们免费修夹爪。
+  label: 收费服务
+  category: 甲方原因
+  evidence:
+    - {doc: 售后服务协议, contains: 未经乙方书面同意}
+    - {doc: 维修报告, contains: 甲方设备部于 2026-10-30 修改了机床侧自动门信号延时参数}
+  rationale: 甲方自行修改机床侧信号参数导致碰撞，与 AS-003 相同，属于第五条除外情形。
+  reviewed: false
+
+- id: A06
+  request: 夜班 R2 又报了 SRVO-050 碰撞检测，停了一会儿，客户问这个是不是保修，原因还不知道。
+  label: 需诊断确认
+  category: 机器人
+  evidence:
+    - {doc: 售后工单记录, contains: SRVO-050}
+  rationale: 业务负责人复核：碰撞报警原因未查明，责任归属和是否在保都无法确认，也就无法确定是甲方购买还是乙方发备品，必须先诊断（AS-005 仍在调查）。
+  reviewed: true
+
+- id: A07
+  request: 客户希望质保期内我们每个月都来做一次巡检，费用包含在保修里。
+  label: 收费服务
+  category: 服务
+  evidence:
+    - {doc: 售后服务协议, contains: 每季度一次免费预防性巡检}
+  rationale: 免费巡检为每季度一次，超出频次按第六条收费。
+  reviewed: false
+
+- id: A08
+  request: 早班夹爪经常报夹紧力不足，客户要求免费换夹爪气缸。
+  label: 需诊断确认
+  category: 气源
+  evidence:
+    - {doc: 巡检记录, contains: 0.46 MPa}
+    - {doc: 售后服务协议, contains: 甲方提供的压缩空气、电源、网络不满足技术协议要求造成的损坏}
+  rationale: 巡检发现早班气压 0.46 MPa 低于下限，报警可能是甲方气源问题而非气缸故障，需先确认。
+  reviewed: false
+
+- id: A09
+  request: 地轨同步带磨得比较快，客户要求现在免费更换。
+  label: 需诊断确认
+  category: 机械
+  evidence:
+    - {doc: 巡检记录, contains: 地轨导轨 10 月未润滑}
+    - {doc: 巡检记录, contains: 地轨同步带磨损偏快}
+  rationale: 同步带是备件，但巡检发现甲方未按规范润滑导轨，磨损原因需确认。
+  reviewed: false
+
+- id: A10
+  request: 客户新开发了 ZX-A03 型号，想让我们改程序和夹爪让这条线也能做，算在保修里吗？
+  label: 收费服务
+  category: 新增服务
+  evidence:
+    - {doc: 售后服务协议, contains: 新增功能、产能提升、产线搬迁等新增服务}
+  rationale: 新型号属于新增功能。
+  reviewed: false
+
+- id: A11
+  request: 明年初产线要从二号车间搬到三号车间，客户问拆装调试是不是免费。
+  label: 收费服务
+  category: 新增服务
+  evidence:
+    - {doc: 售后服务协议, contains: 新增功能、产能提升、产线搬迁等新增服务}
+  rationale: 产线搬迁明确列为除外。
+  reviewed: false
+
+- id: A12
+  request: HMI 触摸屏右半边触摸失灵，客户要求免费换屏。
+  label: 免费保修
+  category: 电气
+  evidence:
+    - {doc: 备件价格清单, contains: HMI 触摸屏}
+    - {doc: 售后服务协议, contains: 乙方免费维修或更换零部件}
+  rationale: 触摸屏是乙方供货的备件，没有除外迹象。
+  reviewed: false
+
+- id: A13
+  request: 客户 IT 自己在 PLC 程序里加了一个给 MES 的点位，之后产线频繁报通讯错误，要求我们免费处理。
+  label: 收费服务
+  category: 甲方原因
+  evidence:
+    - {doc: 售后服务协议, contains: 修改 PLC 程序、机器人程序或参数、接线或机械结构造成的故障}
+  rationale: 甲方未经书面同意修改 PLC 程序，属于第五条（3）。
+  reviewed: false
+
+- id: A14
+  request: HMI 和 PLC 又出现通讯中断，客户问我们能不能远程看一下，要不要收费。
+  label: 免费保修
+  category: 服务
+  evidence:
+    - {doc: 售后服务协议, contains: 质保期内远程诊断免费}
+  rationale: 质保期内远程诊断免费；若最终查明是甲方网络原因（参考 AS-004），网络由甲方处理。
+  reviewed: false
+
+- id: A15
+  request: 如果到 2027 年 11 月伺服电机坏了，还能免费换吗？
+  label: 收费服务
+  category: 质保期
+  evidence:
+    - {doc: 售后服务协议, contains: 2026-10-20 至 2027-10-19}
+  rationale: 2027 年 11 月已超出质保期。
+  reviewed: false
+
+- id: A16
+  request: 安全光栅的保护罩被铁屑划花了，客户要求免费换新。
+  label: 收费服务
+  category: 易损件
+  evidence:
+    - {doc: 售后服务协议, contains: 夹爪指尖、吸盘、视觉光源、安全光栅保护罩}
+  rationale: 安全光栅保护罩是易损件。
+  reviewed: false
+
+- id: A17
+  request: 安全光栅本身失效了，人伸手进去也不触发停机，客户要求马上免费处理。
+  label: 免费保修
+  category: 安全
+  evidence:
+    - {doc: 备件价格清单, contains: 安全光栅}
+    - {doc: 售后服务协议, contains: 乙方免费维修或更换零部件}
+  rationale: 安全光栅是备件（保护罩才是易损件），无除外迹象。
+  reviewed: false
+
+- id: A18
+  request: 操作工在设备自动运行时进围栏取料，触发急停，R1 急停时撞到料仓，夹爪变形了。
+  label: 收费服务
+  category: 甲方原因
+  evidence:
+    - {doc: 操作与维护规范, contains: 设备自动运行时禁止进入安全围栏}
+  rationale: 违反操作规范造成的损坏，属于第五条（2）。
+  reviewed: false
+
+- id: A19
+  request: 车间用机器人夹了一个 12 kg 的工装，结果夹爪手指断了。
+  label: 收费服务
+  category: 甲方原因
+  evidence:
+    - {doc: 操作与维护规范, contains: 夹爪单次最大抓取重量 10 kg}
+  rationale: 超负载使用，且抓取了工件以外的物品。
+  reviewed: false
+
+- id: A20
+  request: 客户维修工改了 R1 的 TCP 参数，之后抓取一直偏位，要求我们免费来调。
+  label: 收费服务
+  category: 甲方原因
+  evidence:
+    - {doc: 操作与维护规范, contains: 禁止修改机器人 TCP、工具坐标、用户坐标等参数}
+  rationale: 未经认证人员修改机器人参数，属于第五条（3）。
+  reviewed: false
+
+- id: A21
+  request: PLC 电源模块坏了，整条线停了，这个是不是免费？我们最晚什么时候要响应？
+  label: 免费保修
+  category: 电气
+  evidence:
+    - {doc: 备件价格清单, contains: PLC 电源模块}
+    - {doc: 售后服务协议, contains: 2 小时内响应}
+  rationale: PLC 电源模块是备件，无除外迹象；停线 P1，2 小时内响应（比合同的 4 小时更严，以协议为准）。
+  reviewed: false
+
+- id: A22
+  request: 料仓抽屉没推到位操作工就启动了，毛坯掉下来把到位传感器砸坏了。
+  label: 收费服务
+  category: 甲方原因
+  evidence:
+    - {doc: 操作与维护规范, contains: 料仓抽屉必须推到位、到位指示灯亮后再启动自动运行}
+  rationale: 违反操作规范造成损坏。
+  reviewed: false
+
+- id: A23
+  request: 客户反映最近节拍从 43 秒慢到了 46 秒左右，不知道什么原因，要求按保修处理。
+  label: 需诊断确认
+  category: 性能
+  evidence:
+    - {doc: 终验收证书, contains: 43.6 s/件}
+  rationale: 验收时节拍达标，现在变慢原因不明（可能是设备、来料或气源），需先诊断。
+  reviewed: false
+
+- id: A24
+  request: 视觉最近偶发识别失败，客户说车间上周刚换了一批 LED 照明灯，这个算保修吗？
+  label: 需诊断确认
+  category: 视觉
+  evidence:
+    - {doc: 操作与维护规范, contains: 视觉工位附近不得新增强光源或改变照明}
+  rationale: 照明变化可能是甲方原因，但尚未确认识别失败与照明有关，需现场确认。
+  reviewed: false

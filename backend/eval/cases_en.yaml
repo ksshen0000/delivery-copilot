@@ -1,0 +1,477 @@
+# Scope-judgment eval set, English (based on sample_data/project_a_en)
+#
+# The English version of cases.yaml: same ids, labels and categories, run against the English
+# translation of the same project, so the two languages can be compared case by case.
+#
+# Label rules:
+#   In scope      Explicitly included; a direct part of an agreed clause; or confirmed in writing (minutes, point list).
+#   Out of scope  Explicitly excluded; conflicts with the agreed specification, quantity, brand or standard (a change);
+#                 or explicitly the Buyer's responsibility.
+#   Ambiguous     Not mentioned and cannot be clearly inferred from existing clauses; or a clause has two reasonable readings.
+#
+# evidence: the document (filename fragment) the judgment should rest on, and a passage that appears in it verbatim.
+# reviewed: whether a project manager has reviewed the label. Labels follow cases.yaml.
+
+- id: S01
+  request: The customer's quality team wants the robot to read a QR code on each blank before picking it, bind the code to the machining result and send it to the MES. Is that our job?
+  label: Out of scope
+  category: Traceability
+  evidence:
+  - doc: Technical_Agreement
+    contains: Workpiece traceability is not included in this phase
+  rationale: Section 3.8 of the Technical Agreement explicitly excludes marking, code reading and barcode binding; only a PROFINET slot is reserved.
+  reviewed: false
+
+- id: S02
+  request: The customer asks whether we can add a laser marking machine before unloading to mark the date and serial number on each part.
+  label: Out of scope
+  category: Traceability
+  evidence:
+  - doc: Technical_Agreement
+    contains: Workpiece traceability is not included in this phase
+  rationale: Section 3.8 explicitly excludes marking.
+  reviewed: false
+
+- id: S03
+  request: The customer's IT wants us to build the shop-floor production dashboard as well, pulling data from the MES.
+  label: Out of scope
+  category: MES
+  evidence:
+  - doc: Technical_Agreement
+    contains: Data collection and dashboard development on the MES side are not in the Supplier's scope
+  rationale: Section 3.7 explicitly puts MES-side data collection and dashboards outside the Supplier scope.
+  reviewed: false
+
+- id: S04
+  request: The customer wants the PLC to send the current alarm code to the MES over OPC UA. Do we have to do that?
+  label: In scope
+  category: MES
+  evidence:
+  - doc: Technical_Agreement
+    contains: provides output, cycle time, equipment status and alarm data to the Buyer's MES
+  - doc: Point_List
+    contains: Current alarm code
+  rationale: Section 3.7 commits to alarm data, and the point list already has an alarm code point.
+  reviewed: false
+
+- id: S05
+  request: The MES team wants a machining complete timestamp for every part. Is that point ours to provide?
+  label: In scope
+  category: MES
+  evidence:
+  - doc: Design_Review
+    contains: Per-part machining complete timestamp
+  - doc: Point_List
+    contains: Per-part machining complete timestamp
+  rationale: Not listed in the Technical Agreement, but confirmed in writing at the design review and included in point list V0.4.
+  reviewed: false
+
+- id: S06
+  request: The customer wants the MES to send a "production enable" signal; when it is off, the line should stop after the current part. Does the PLC need to support it?
+  label: In scope
+  category: MES
+  evidence:
+  - doc: Point_List
+    contains: MES production enable
+  rationale: The point list already defines the MES→PLC production enable signal.
+  reviewed: false
+
+- id: S07
+  request: Liu Yang from the customer wants a per-shift output report page added to the HMI.
+  label: Ambiguous
+  category: HMI
+  evidence:
+  - doc: Technical_Agreement
+    contains: 1 HMI touch panel
+  - doc: Technical_Agreement
+    contains: Data collection and dashboard development on the MES side are not in the Supplier's scope
+  rationale: The agreement only covers the HMI hardware and line logic, with no screen list; shift output data exists as a point, but reports are close to MES work.
+  reviewed: false
+
+- id: S08
+  request: The customer wants to view the last 30 days of alarm history on the HMI and export it to Excel.
+  label: Ambiguous
+  category: HMI
+  evidence:
+  - doc: Technical_Agreement
+    contains: 1 HMI touch panel
+  rationale: HMI screens and data storage are not specified; history and export may need extra storage or a PC.
+  reviewed: false
+
+- id: S09
+  request: The customer wants the HMI screens to switch between Chinese and English for foreign auditors.
+  label: Ambiguous
+  category: HMI
+  evidence:
+  - doc: Technical_Agreement
+    contains: 1 HMI touch panel
+  rationale: HMI language is not mentioned (documentation is specified in Chinese, screens are not).
+  reviewed: false
+
+- id: S10
+  request: The customer wants the magazines changed from 6 tiers to 8 tiers so the line can run unattended longer.
+  label: Out of scope
+  category: Mechanical
+  evidence:
+  - doc: Technical_Agreement
+    contains: 6-tier drawer type
+  - doc: Design_Review
+    contains: it affects the magazine structure and delivery time and needs a written change
+  rationale: The specification is 6 tiers, and the design review stated that extra tiers need a written change.
+  reviewed: false
+
+- id: S11
+  request: Each magazine drawer must have in-position detection so the line cannot start if a drawer is not pushed in. Is that ours?
+  label: In scope
+  category: Mechanical
+  evidence:
+  - doc: Technical_Agreement
+    contains: with in-position detection
+  rationale: Section 3.3 explicitly includes in-position detection.
+  reviewed: false
+
+- id: S12
+  request: The workshop may add a fifth machine next year. The customer asks whether the floor track can reach that position.
+  label: In scope
+  category: Expansion
+  evidence:
+  - doc: Design_Review
+    contains: the 8 m track travel covers the fifth machine position
+  rationale: The existing 8 m track already covers it, with no extra work; answered at the design review.
+  reviewed: false
+
+- id: S13
+  request: Once the fifth machine arrives, the customer wants us to integrate it into the line program and schedule it with the existing 4.
+  label: Out of scope
+  category: Expansion
+  evidence:
+  - doc: Design_Review
+    contains: program extension needs a separate assessment
+  - doc: Technical_Agreement
+    contains: signal exchange with the 4 machine tools
+  rationale: The scope covers 4 machines, and the design review said program extension needs a separate assessment.
+  reviewed: false
+
+- id: S14
+  request: The customer has developed a new model, ZX-A03, and wants this line to run it, with grippers and programs from us.
+  label: Out of scope
+  category: Product
+  evidence:
+  - doc: Technical_Agreement
+    contains: '2 models in total: ZX-A01, ZX-A02'
+  rationale: The workpieces are specified as 2 models; a new model is a change.
+  reviewed: false
+
+- id: S15
+  request: ZX-A02 changeover now takes 26 minutes, and the customer insists it must be under 20. Is that ours to fix?
+  label: In scope
+  category: Performance
+  evidence:
+  - doc: Technical_Agreement
+    contains: no more than 20 minutes
+  rationale: The agreement specifies changeover of at most 20 minutes, a target the Supplier must meet.
+  reviewed: false
+
+- id: S16
+  request: The customer says ZX-A02 must also reach a cycle time under 45 seconds, or they will not sign the SAT.
+  label: Ambiguous
+  category: Performance
+  evidence:
+  - doc: Technical_Agreement
+    contains: ZX-A01, at full load of 4 machine tools
+  rationale: The note on the 45 s target refers only to ZX-A01; no cycle time is agreed for ZX-A02.
+  reviewed: false
+
+- id: S17
+  request: The customer wants machine tool breakdowns counted in the OEE, and still expects 90%.
+  label: Out of scope
+  category: Performance
+  evidence:
+  - doc: Technical_Agreement
+    contains: Excluding machine tool failures and Buyer's material problems
+  rationale: The OEE target explicitly excludes machine tool failures; the request goes beyond the agreed definition.
+  reviewed: false
+
+- id: S18
+  request: When fully loaded, the customer wants the line to run unattended for an hour. Have we committed to that?
+  label: In scope
+  category: Performance
+  evidence:
+  - doc: Technical_Agreement
+    contains: Magazine autonomous run time
+  rationale: The performance targets specify at least 60 minutes when fully loaded.
+  reviewed: false
+
+- id: S19
+  request: The customer wants the robot to transfer parts between machines, e.g. from the OP10 machine to the OP20 machine. Is that in our scope?
+  label: In scope
+  category: Process
+  evidence:
+  - doc: Technical_Agreement
+    contains: between machines for successive operations
+  rationale: The project overview explicitly includes transfer between machines.
+  reviewed: false
+
+- id: S20
+  request: The customer wants to switch to 3D vision so blanks can be picked even when piled randomly.
+  label: Out of scope
+  category: Vision
+  evidence:
+  - doc: Technical_Agreement
+    contains: 1 2D vision system
+  rationale: 2D vision with drawer magazines is specified; 3D is a specification change.
+  reviewed: false
+
+- id: S21
+  request: Blank surfaces are sometimes oily and reflective; the customer wants the vision to locate them reliably anyway.
+  label: Ambiguous
+  category: Vision
+  evidence:
+  - doc: Technical_Agreement
+    contains: positioning accuracy ±0.5 mm
+  rationale: Only positioning accuracy is specified, not the blank surface condition; whether oil is a material issue or a vision robustness issue needs clarifying.
+  reviewed: false
+
+- id: S22
+  request: The customer requires a safety fence, door locks and emergency stops, compliant with the national standard. Is that ours?
+  label: In scope
+  category: Safety
+  evidence:
+  - doc: Technical_Agreement
+    contains: safety fence, safety door locks, safety light curtains and emergency stop circuit
+  rationale: Section 3.5 explicitly includes them.
+  reviewed: false
+
+- id: S23
+  request: The customer will replicate the line in a European plant and wants it CE certified.
+  label: Out of scope
+  category: Safety
+  evidence:
+  - doc: Technical_Agreement
+    contains: compliant with GB 11291.2
+  rationale: The agreed safety standard is the Chinese national standard; CE certification is extra.
+  reviewed: false
+
+- id: S24
+  request: At the spot where operators refill the magazines, the customer wants an additional light curtain so the robot cannot hurt anyone while refilling.
+  label: Ambiguous
+  category: Safety
+  evidence:
+  - doc: Technical_Agreement
+    contains: safety fence, safety door locks, safety light curtains and emergency stop circuit
+  rationale: Light curtains are in scope, but their number and coverage are not specified; whether refill-area guarding is basic safety or an addition needs a risk assessment.
+  reviewed: false
+
+- id: S25
+  request: The customer wants the safety fence painted in their plant's standard safety yellow.
+  label: Ambiguous
+  category: Safety
+  evidence:
+  - doc: Technical_Agreement
+    contains: safety fence
+  rationale: The fence color is not specified.
+  reviewed: false
+
+- id: S26
+  request: The customer wants to switch the main PLC to Mitsubishi because their maintenance staff know it better.
+  label: Out of scope
+  category: Electrical
+  evidence:
+  - doc: Technical_Agreement
+    contains: Siemens S7-1500
+  rationale: Siemens S7-1500 is agreed; changing brand is a change.
+  reviewed: false
+
+- id: S27
+  request: The machine tools' automatic door and chuck clamp signals are still not ready, and the customer wants our electrical engineer to rewire the machine side.
+  label: Out of scope
+  category: Buyer's responsibility
+  evidence:
+  - doc: Technical_Agreement
+    contains: the Buyer coordinates the machine tool manufacturer to complete the machine-side modification
+  rationale: Sections 3.6 and 5.2 make the machine-side modification the Buyer's responsibility.
+  reviewed: false
+
+- id: S28
+  request: Compressed air pressure is too low on the morning shift; the customer wants us to add a booster valve or an air tank for the grippers.
+  label: Out of scope
+  category: Buyer's responsibility
+  evidence:
+  - doc: Technical_Agreement
+    contains: compressed air (0.5–0.7 MPa)
+  rationale: Section 5.1 makes the Buyer supply 0.5–0.7 MPa air; low pressure is the Buyer's responsibility.
+  reviewed: false
+
+- id: S29
+  request: The floor under the equipment is uneven, and the customer wants us to level it while we are at it.
+  label: Out of scope
+  category: Buyer's responsibility
+  evidence:
+  - doc: Technical_Agreement
+    contains: flatness ±3 mm/2 m
+  rationale: 'Section 5.1: floor conditions are provided by the Buyer.'
+  reviewed: false
+
+- id: S30
+  request: The customer says we should buy the commissioning blanks ourselves because their material is short.
+  label: Out of scope
+  category: Buyer's responsibility
+  evidence:
+  - doc: Technical_Agreement
+    contains: 50 blank samples of each model for commissioning
+  rationale: 'Section 5.3: the Buyer provides commissioning samples and FAT material.'
+  reviewed: false
+
+- id: S31
+  request: The network cable from the workshop switch to the MES server hasn't been run yet; the customer asks if we can lay it.
+  label: Out of scope
+  category: Buyer's responsibility
+  evidence:
+  - doc: Technical_Agreement
+    contains: network cable connection to the equipment PLC and access to the MES server
+  rationale: 'Section 5.4: the workshop network is provided by the Buyer.'
+  reviewed: false
+
+- id: S32
+  request: The 3 days of on-site training are done, but new maintenance staff have joined and the customer wants 2 more days of free training.
+  label: Out of scope
+  category: Training
+  evidence:
+  - doc: Technical_Agreement
+    contains: 3 days of on-site training
+  rationale: 3 days of training are agreed; extra training is a change.
+  reviewed: false
+
+- id: S33
+  request: The customer wants to train 15 people in a single session.
+  label: Out of scope
+  category: Training
+  evidence:
+  - doc: Technical_Agreement
+    contains: no more than 10 people per session
+  rationale: At most 10 people per session is agreed.
+  reviewed: false
+
+- id: S34
+  request: The customer asks whether we can record the training on video for future new hires.
+  label: Ambiguous
+  category: Training
+  evidence:
+  - doc: Technical_Agreement
+    contains: 3 days of on-site training
+  rationale: Training videos are not mentioned.
+  reviewed: false
+
+- id: S35
+  request: The customer wants the electrical drawings and a backup of the PLC program. Do we have to provide them?
+  label: In scope
+  category: Documentation
+  evidence:
+  - doc: Technical_Agreement
+    contains: PLC program backup
+  rationale: Section 7.2 explicitly includes electrical drawings and the PLC program backup.
+  reviewed: false
+
+- id: S36
+  request: The customer wants the source code of the robot process package so they can modify it themselves.
+  label: Out of scope
+  category: Documentation
+  evidence:
+  - doc: Technical_Agreement
+    contains: excluding the encrypted source code of the robot process package
+  rationale: Section 7.2 explicitly excludes the encrypted process package source.
+  reviewed: false
+
+- id: S37
+  request: The customer wants English versions of the operation and maintenance manuals.
+  label: Out of scope
+  category: Documentation
+  evidence:
+  - doc: Technical_Agreement
+    contains: in Chinese, 2 printed sets plus electronic copies
+  rationale: Documentation is agreed in Chinese; an English version is extra.
+  reviewed: false
+
+- id: S38
+  request: The HMI operation manual has no changeover chapter and the customer wants it added. Is that ours?
+  label: In scope
+  category: Documentation
+  evidence:
+  - doc: Technical_Agreement
+    contains: operation manual
+  - doc: Issue_Log
+    contains: HMI operation manual lacks a changeover chapter
+  rationale: The operation manual is an agreed deliverable; missing content is a Supplier issue to close (P-009).
+  reviewed: false
+
+- id: S39
+  request: The customer wants a free spare parts kit shipped with the line, including gripper fingertips and vision light sources.
+  label: Ambiguous
+  category: Spare parts
+  evidence:
+  - doc: Technical_Agreement
+    contains: spare parts list
+  - doc: Contract
+    contains: Wear parts (gripper fingertips, suction cups, vision light source) are not covered by free replacement
+  rationale: Only a spare parts list is agreed, not spares shipped with the line; the contract lists these as wear parts, suggesting not free, but shipped spares are not settled.
+  reviewed: false
+
+- id: S40
+  request: Gripper fingertips wore out during the warranty period, and the customer wants free replacements.
+  label: Out of scope
+  category: Warranty
+  evidence:
+  - doc: Contract
+    contains: Wear parts (gripper fingertips, suction cups, vision light source) are not covered by free replacement
+  rationale: Article 6 lists gripper fingertips as wear parts, not replaced free of charge.
+  reviewed: false
+
+- id: S41
+  request: A robot servo motor failed during the warranty period; the customer wants a free replacement and someone on site within two days.
+  label: In scope
+  category: Warranty
+  evidence:
+  - doc: Contract
+    contains: arrive on site within 48 hours
+  rationale: Equipment defects are repaired free during warranty, and arrival within 48 hours is a contract commitment.
+  reviewed: false
+
+- id: S42
+  request: The customer wants the warranty extended from 12 to 24 months.
+  label: Out of scope
+  category: Warranty
+  evidence:
+  - doc: Contract
+    contains: The warranty period is 12 months from the date the final acceptance is passed
+  rationale: The contract specifies 12 months.
+  reviewed: false
+
+- id: S43
+  request: The customer wants remote diagnostics so our engineers can connect to the PLC remotely when something goes wrong.
+  label: Ambiguous
+  category: Service
+  evidence:
+  - doc: Contract
+    contains: respond within 4 hours
+  rationale: Remote support is not mentioned, and it involves the Buyer's network security policy.
+  reviewed: false
+
+- id: S44
+  request: During the 72-hour SAT, the customer wants us to staff the site around the clock in three shifts.
+  label: Ambiguous
+  category: Service
+  evidence:
+  - doc: Technical_Agreement
+    contains: continuous production for 72 hours
+  rationale: The 72-hour production test is agreed, but Supplier staffing and shifts are not.
+  reviewed: false
+
+- id: S45
+  request: The layout moves the floor track 400 mm east to avoid a column. Does that change need a change order?
+  label: In scope
+  category: Layout
+  evidence:
+  - doc: Design_Review
+    contains: the floor track is shifted 400 mm to the east
+  rationale: Confirmed at the design review as a normal design-phase adjustment, already in layout drawing V3.
+  reviewed: false

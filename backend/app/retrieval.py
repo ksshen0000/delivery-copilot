@@ -13,12 +13,29 @@ from .db import Database
 jieba.setLogLevel(logging.WARNING)
 
 STOPWORDS = set('的 了 是 在 和 与 及 或 等 对 由 为 将 把 被 中 也 都 就 而 并 吗 呢 啊 吧 什么 哪些 怎么 如何 是否 一个 这个 那个 我们 你们 他们'.split())
+STOPWORDS |= set('''a an the and or but if of to in on at by for with from as into about over under is are was
+were be been being do does did have has had it its this that these those there here what which who whom whose when
+where why how can could should would will shall may might must not no yes we you they he she i me my our your their
+them us any all some each than then so such also only just more most very much many please'''.split())
 WORD = re.compile(r'\w', re.UNICODE)
+ASCII_WORD = re.compile(r'[a-z]+')
 RRF_K = 60
 
 
+def stem(token: str) -> str:
+    """A light English stemmer: enough to match report/reports/reporting, nothing clever."""
+    if not ASCII_WORD.fullmatch(token) or len(token) <= 4:
+        return token
+    for suffix, replacement in (('ies', 'y'), ('ing', ''), ('ed', ''), ('s', '')):
+        if token.endswith(suffix) and not token.endswith('ss') and len(token) - len(suffix) >= 3:
+            token = token[:-len(suffix)] + replacement
+            break
+    # Drop a final e so require/required/requiring and issue/issues meet at the same stem.
+    return token[:-1] if token.endswith('e') and len(token) > 4 else token
+
+
 def tokenize(text: str) -> list[str]:
-    return [token for token in jieba.lcut_for_search(text.lower())
+    return [stem(token) for token in jieba.lcut_for_search(text.lower())
             if WORD.search(token) and token not in STOPWORDS]
 
 

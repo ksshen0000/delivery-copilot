@@ -2,7 +2,7 @@
 
     uv run python -m eval.review export            # → eval/review.xlsx
     uv run python -m eval.review import            # applies the 复核标签 / 复核依据 columns
-    uv run python -m eval.review export --domain software_impl   # → eval/review_software_impl.xlsx
+    uv run python -m eval.review export --lang en                # → eval/review_en.xlsx
 
 On import, a filled 复核标签 replaces the label and marks the case reviewed; 复核依据, when
 filled, replaces the rationale. Rows with an empty 复核标签 are left unchanged. Pass
@@ -87,12 +87,14 @@ if __name__ == '__main__':
     parser.add_argument('action', choices=('export', 'import'))
     parser.add_argument('--results', help='run name whose predictions to show on export')
     parser.add_argument('--domain', default=DEFAULT_DOMAIN, help='domain pack whose eval set to review')
+    parser.add_argument('--lang', choices=('zh', 'en'), default='zh')
     args = parser.parse_args()
-    domain = load_domains()[args.domain]
-    if not domain.eval_cases:
-        raise SystemExit(f'Domain {domain.id} has no eval set')
-    sheet = ROOT / ('review.xlsx' if domain.id == DEFAULT_DOMAIN else f'review_{domain.id}.xlsx')
-    labels = tuple(domain.labels)
+    domain = load_domains()[args.domain].variants.get(args.lang)
+    if not (domain and domain.eval_cases):
+        raise SystemExit(f'Domain {args.domain} has no {args.lang} eval set')
+    suffix = ('' if domain.id == DEFAULT_DOMAIN else f'_{domain.id}') + ('' if args.lang == 'zh' else f'_{args.lang}')
+    sheet = ROOT / f'review{suffix}.xlsx'
+    labels = tuple(label.name for label in domain.labels.values())
     if args.action == 'export':
         export(args.results, domain.eval_cases, sheet, labels)
     else:

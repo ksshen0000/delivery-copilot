@@ -253,7 +253,7 @@ footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; border-top:
       <div class="card"><div class="num">02</div><h3>多轮主动检索</h3><p>助手会根据问题换不同的关键词检索两三次，把合同、技术协议、纪要和日报中的相关内容串起来。</p></div>
       <div class="card"><div class="num">03</div><h3>每条结论都有出处</h3><p>回答中的引用编号可以点击核对。实测中没有出现过编造的引用编号。检索不到时直接说明，并建议补充哪些资料。</p></div>
       <div class="card"><div class="num">04</div><h3>过程透明</h3><p>检索了什么、找到了什么，以步骤卡片的形式实时展示。结论怎么来的，一目了然。</p></div>
-      <div class="card"><div class="num">05</div><h3>中文术语友好</h3><p>中文分词关键词检索为主，向量检索为辅，两路结果融合排序。型号、点位地址、条款编号都能精确命中。</p></div>
+      <div class="card"><div class="num">05</div><h3>中英文都能用</h3><p>中英文分词的关键词检索加多语言向量检索，型号、点位地址、条款编号都能精确命中。用中文问英文合同也行：引用原文并附译文。</p></div>
       <div class="card"><div class="num">06</div><h3>模型可替换</h3><p>兼容 DeepSeek、OpenAI 等任意 OpenAI 协议接口。项目数据保存在本地，部署方式自己决定。</p></div>
     </div>
   </div>
@@ -299,10 +299,10 @@ footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; border-top:
     <h2>用评估集说话</h2>
     <p class="lead">我们构建了 45 条真实风格的客户变更请求，覆盖追溯、MES、HMI、性能、安全、甲方责任、培训、质保等类别，每条都标注了结论和证据原文。</p>
     <div class="stats">
-      <div class="stat"><div class="v">87%</div><div class="k">范围判断准确率（DeepSeek，9 次运行均值）</div></div>
-      <div class="stat"><div class="v">97%</div><div class="k">关键证据被检索并引用的比例</div></div>
-      <div class="stat"><div class="v">0</div><div class="k">编造的引用编号（共 675 次回答）</div></div>
-      <div class="stat"><div class="v">~5 秒</div><div class="k">每个问题的平均响应时间</div></div>
+      <div class="stat"><div class="v">92–93%</div><div class="k">范围判断准确率（DeepSeek；中文、英文及中英跨语言四种组合）</div></div>
+      <div class="stat"><div class="v">98%+</div><div class="k">关键证据被检索并引用的比例</div></div>
+      <div class="stat"><div class="v">0</div><div class="k">编造的引用编号（共 540 次回答）</div></div>
+      <div class="stat"><div class="v">100%</div><div class="k">回答语言与提问语言一致</div></div>
     </div>
     <p class="note">说明：评估基于一个虚构的自动化产线项目，标签为初稿，正在由交付项目经理逐条复核。分歧主要集中在“合同未提及的需求应判为范围外还是存在歧义”，复核后会更新结果。</p>
   </div>

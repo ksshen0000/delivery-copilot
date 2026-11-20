@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     embedding_api_key: str = ''
     embedding_model: str = ''
 
+    # Optional LangSmith tracing (see app/tracing.py)
+    langsmith_api_key: str = ''
+    langsmith_project: str = 'delivery-copilot'
+    langsmith_endpoint: str = ''
+
     data_dir: Path = Path('data')
     top_k: int = 6
 
